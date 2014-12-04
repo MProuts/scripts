@@ -3,14 +3,32 @@ def instance_status
                                 --query 'DBInstances[0].[DBInstanceStatus][0]'`
 end
 
-def wait_for_status status
-  until instance_status =~ status
-    puts "Waiting..."
+def deleted?
+  instance_status.match(/^$/)
+end
+
+def available?
+  instance_status.match('available')
+end
+
+def wait_for_status_deleted
+  until deleted?
+    puts "Current status: #{instance_status.chomp}"
+    puts "Awaited status: \"\"..."
+    sleep 5
+  end
+end
+
+def wait_for_status_available
+  until available?
+    puts "Current status: #{instance_status.chomp}"
+    puts "Awaited status: \"available\"..."
     sleep 5
   end
 end
 
 def delete_instance
+  return if deleted?
   `aws rds delete-db-instance --db-instance-identifier district-steam-staging \
                               --skip-final-snapshot`
 end
@@ -33,21 +51,20 @@ end
 # Delete the current staging db
 puts 'Deleting staging-db...'
 delete_instance
-
-# Wait until the deletion is complete
-wait_for_status('')
+wait_for_status_deleted
+puts 'Deletion complete!'
 
 # Create a fresh staging db with the latest backup from production
 puts 'Restoring staging-db...'
 restore_instance
-
-# Wait until the new db instance is available
-wait_for_status('available')
+wait_for_status_available
+puts 'Restoration complete!'
 
 # Add the Database Server security group
 puts 'Adding security group...'
+add_security_group
+puts 'Security group updated!'
 
-# Wait until the new db instance is available
-wait_for_status('available')
-
-puts 'Update complete!'
+puts '========================='
+puts 'Database update complete!'
+puts '========================='
