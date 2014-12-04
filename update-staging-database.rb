@@ -1,3 +1,12 @@
+# Environment Variables
+# =====================
+
+ENV['AWS_DEFAULT_REGION'] = 'us-east-1'
+ENV['AWS_ACCESS_KEY_ID'] = 'AKIAIH5CYL5DYEPE2QMQ'
+
+# Methods
+# =======
+
 def instance_status
  `aws rds describe-db-instances --db-instance-identifier district-steam-staging \
                                 --query 'DBInstances[0].[DBInstanceStatus][0]'`
@@ -47,6 +56,9 @@ def add_security_group
                               --vpc-security-group-ids sg-30bac855 \
                               --apply-immediately`
 end
+
+# Method calls
+# ============
 
 # Delete the current staging db
 puts 'Deleting staging-db...'
