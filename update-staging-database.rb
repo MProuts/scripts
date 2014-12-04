@@ -15,7 +15,7 @@ def wait_for_status_deleted
   until deleted?
     puts "Current status: #{instance_status.chomp}"
     puts "Awaited status: \"\"..."
-    sleep 5
+    sleep 60
   end
 end
 
@@ -23,7 +23,7 @@ def wait_for_status_available
   until available?
     puts "Current status: #{instance_status.chomp}"
     puts "Awaited status: \"available\"..."
-    sleep 5
+    sleep 60
   end
 end
 
